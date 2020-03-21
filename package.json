@@ -1,0 +1,29 @@
+{
+  "name": "inventory-management-be",
+  "version": "1.0.0",
+  "description": "- [ExpressJS](https://github.com/expressjs/express)",
+  "main": "server.js",
+  "dependencies": {
+    "bcrypt": "^4.0.1",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-useragent": "^1.0.13",
+    "mongodb": "^3.5.5",
+    "nodemon": "^2.0.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "nodemon server.js",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/rplgdc-internship-2020/inventory-management-be.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/rplgdc-internship-2020/inventory-management-be/issues"
+  },
+  "homepage": "https://gitlab.com/rplgdc-internship-2020/inventory-management-be#readme"
+}
