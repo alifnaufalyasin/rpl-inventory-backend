@@ -1,7 +1,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const useragent = require('express-useragent');
-const { regisUser, regisOrganisasi, loginUser } = require('./controller/controller');
+const { regisUser, regisOrganisasi, loginUser } = require('./controller/user');
 require('dotenv').config()
 
 const app = express()
