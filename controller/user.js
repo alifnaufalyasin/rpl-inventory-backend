@@ -8,8 +8,14 @@ const regisUser = async (req,res) => {
     const id = await collection.countDocuments()
     let hash = bcrypt.hashSync(payload.password, 10);
 
-    
-    const myobj = { id_user: id+1, nama: payload.nama, email: payload.email, password: hash, no_telp: payload.no_telp };
+    const myobj = { 
+      id_user: id+1, 
+      nama: payload.nama, 
+      email: payload.email, 
+      password: hash, 
+      no_telp: payload.no_telp 
+    };
+
     try {
       await collection.insertOne(myobj) 
       res.json({ status: 200, message:"Sukses melakukan registrasi", data: myobj });
@@ -30,7 +36,21 @@ const loginUser = async (req,res) => {
     if(bcrypt.compareSync(payload.password, dataUser[0].password)) {
       res.json({ status: 200, message: "Sukses login", data: dataUser})
     } else {
-      res.json({ status: 400, data: "Password Salah"})
+      res.json({ status: 400, message: "Password Salah", data: null})
+    }
+  })
+  client.close()
+}
+
+const detailUser = async (req, res) => {
+  await client.connect(async err => {
+    const collection = client.db("inventory").collection("User");
+    dataUser = await collection.findOne({ id_user: req.params.id })
+
+    if (!dataUser) {
+      res.json({ status: 400, message: "User tidak ditemukan", data: null })
+    } else {
+      res.json({ status: 200, message: "success", data: dataUser })
     }
   })
   client.close()
@@ -43,5 +63,6 @@ const regisOrganisasi = (req, res) => {
 module.exports = {
   regisUser,
   regisOrganisasi,
-  loginUser
+  loginUser,
+  detailUser
 }
