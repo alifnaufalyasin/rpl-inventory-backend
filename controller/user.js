@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const { client, assert } = require("../module/db");
+const { client } = require("../module/db");
 
 const regisUser = async (req,res) => {
   const payload = req.body;
@@ -31,9 +31,9 @@ const loginUser = async (req,res) => {
   const payload = req.body;
   await client.connect(async err => {
     const collection = client.db("inventory").collection("User");
-    dataUser = await collection.find({email: payload.email}).toArray()
+    dataUser = await collection.findOne({email: payload.email})
 
-    if(bcrypt.compareSync(payload.password, dataUser[0].password)) {
+    if(bcrypt.compareSync(payload.password, dataUser.password)) {
       res.json({ status: 200, message: "Sukses login", data: dataUser})
     } else {
       res.json({ status: 400, message: "Password Salah", data: null})
@@ -45,8 +45,8 @@ const loginUser = async (req,res) => {
 const detailUser = async (req, res) => {
   await client.connect(async err => {
     const collection = client.db("inventory").collection("User");
-    dataUser = await collection.findOne({ id_user: req.params.id })
-
+    const id = Number(req.params.id)
+    dataUser = await collection.findOne({ id_user: id })
     if (!dataUser) {
       res.json({ status: 400, message: "User tidak ditemukan", data: null })
     } else {
@@ -56,13 +56,10 @@ const detailUser = async (req, res) => {
   client.close()
 }
 
-const regisOrganisasi = (req, res) => {
 
-}
 
 module.exports = {
   regisUser,
-  regisOrganisasi,
   loginUser,
   detailUser
 }
