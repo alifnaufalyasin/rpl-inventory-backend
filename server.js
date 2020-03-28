@@ -1,10 +1,12 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const useragent = require('express-useragent');
-const { regisUser, loginUser, detailUser } = require('./controller/user');
-const { addBarang, getBarang } = require('./controller/barang');
-const { getOrganisasi, regisOrganisasi } = require('./controller/organisasi');
+const { loginUser, detailUser, regisUser } = require('./controller/user');
+const jwt = require('jsonwebtoken');
+const { regisOrganisasi, getOrganisasi } = require('./controller/organisasi');
+const { addBarang, getBarang, updateBarang, deleteBarang } = require('./controller/barang');
 require('dotenv').config()
+
 
 const app = express()
 const router = express.Router()
@@ -16,20 +18,38 @@ app.use(bodyParser.json())
 
 app.use('/api', router)
 
-// //---Route List
+//---Route List
 router.get('/', (req,res) => res.send("Welcome : " + req.useragent.source))
 
-router.get('/user/:id', detailUser)
-router.post('/regisUser', regisUser)
+//user
 router.post('/login', loginUser)
+router.post('/regisUser', regisUser)
+router.get('/user/:id', authenticateToken, detailUser)
 
-router.post('/regisOrganisasi', regisOrganisasi)
-router.post('/getOrganisasi',getOrganisasi)
+//organisasi
+router.post('/regisOrganisasi', authenticateToken, regisOrganisasi)
+router.get('/getOrganisasi', authenticateToken, getOrganisasi)
 
-router.post('/addBarang', addBarang)
-router.post('/getBarang', getBarang)
-router.post('/removeBarang')
-router.post('/updateBarang')
+//barang
+router.post('/addBarang', authenticateToken, addBarang)
+router.get('/getBarang/:id_org', authenticateToken, getBarang)
+router.put('/updateBarang/:id', authenticateToken, updateBarang)
+router.delete('/deleteBarang/:id',authenticateToken, deleteBarang)
+
+
+async function authenticateToken(req,res,next) {
+  const authHeader = req.headers['authorization']
+  const token = authHeader && authHeader.split(' ')[1]
+  console.log(token)
+  if (token == null) res.sendStatus(401)
+
+  jwt.verify(token, process.env.tokenSecret, (err,user) => {
+    if (err) return res.sendStatus(403)
+    req.user = user
+    next()
+  })
+}
+
 
 
 app.listen(process.env.PORT, () => console.log(`Server running in port: ${process.env.PORT}`))
