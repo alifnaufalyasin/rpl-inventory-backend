@@ -1,45 +1,42 @@
-const { client } = require("../module/db");
+const bcrypt = require('bcrypt');
+const MongoClient = require('mongodb').MongoClient;
+require('dotenv').config()
 
-const regisOrganisasi = async (req, res) => {
+const uri = "mongodb+srv://admin:"+process.env.passDB+"@alive-t50rd.mongodb.net/test?retryWrites=true&w=majority"
+
+function regisOrganisasi(req,res) {
   const payload = req.body;
-  await client.connect(async err => {
-    const collection = client.db("inventory").collection("Organisasi");
+  MongoClient.connect(uri, async function (err,db) {
+    if (err) throw err;
+    const collection = db.db("inventory").collection("Organisasi");
     const id = await collection.countDocuments()
-    
     const myobj = { 
-      id_user: id+1, 
+      id_organisasi: id+1, 
       nama: payload.nama, 
       logo: payload.logo, 
       alamat: payload.alamat 
     };
-
-    try {
-      await collection.insertOne(myobj) 
+    collection.insertOne(myobj, function(err, result) {
+      if (err) throw err;
       res.json({ status: 200, message:"Sukses melakukan registrasi organisasi", data: myobj });
-    } catch (error) {
-      throw err
-    }
-  
+      db.close()
+    })
   })
-  client.close();
-
 }
 
-const getOrganisasi = async (req, res) => {
-  await client.connect(async err => {
-      const collection = client.db("inventory").collection("Organisasi");
-      const total = await collection.countDocuments()
-      if (total != 0){
-          const organisasi = await collection.findOne({})
-          res.json({ status: 200, message: "sukses", data: organisasi });
-      } else {
-          res.json({ status: 200, message: "sukses", data: null });
-      }
+function getOrganisasi(req,res) {
+  MongoClient.connect(uri, async function (err,db) {
+    if (err) throw err;
+    const collection = db.db("inventory").collection("Organisasi");
+    collection.find({}).toArray(function(err, result) {
+      if (err) throw err;
+      res.send(result)
+      db.close()
+    })
   })
-  client.close();
 }
 
-module.exports ={
+module.exports = {
   regisOrganisasi,
   getOrganisasi
 }
