@@ -1,13 +1,42 @@
 const bcrypt = require('bcrypt');
-const { client } = require("../module/db");
+const { signUser } = require('../module/auth');
+const MongoClient = require('mongodb').MongoClient;
+require('dotenv').config()
 
-const regisUser = async (req,res) => {
+const uri = "mongodb+srv://admin:"+process.env.passDB+"@alive-t50rd.mongodb.net/test?retryWrites=true&w=majority"
+
+async function loginUser(req,res) {
   const payload = req.body;
-  await client.connect(async err => {
-    const collection = client.db("inventory").collection("User");
+  MongoClient.connect(uri,function (err,db) {
+    if (err) throw err;
+    const collection = db.db("inventory").collection("User");
+    collection.findOne({email: payload.email}, function(err, result) {
+      if (err) throw err;
+      // console.log(result)
+      console.log(result);
+      if(!result){
+        res.json({ status: 401, message: "User tidak ditemukan", data: null})
+      }else{
+        if(bcrypt.compareSync(payload.password, result.password)) {
+          const user = { email: payload.email }
+          const token = signUser(user)
+          res.json({ status: 200, message: "Sukses login", access_token: token, token_type: "bearer", data: result})
+        } else {
+          res.json({ status: 401, message: "Password Salah", data: null})
+        }
+      }
+      db.close();
+    })
+  })
+}
+
+function regisUser(req,res) {
+  const payload = req.body;
+  MongoClient.connect(uri, async function (err,db) {
+    if (err) throw err;
+    const collection = db.db("inventory").collection("User");
     const id = await collection.countDocuments()
     let hash = bcrypt.hashSync(payload.password, 10);
-
     const myobj = { 
       id_user: id+1, 
       nama: payload.nama, 
@@ -16,51 +45,35 @@ const regisUser = async (req,res) => {
       no_telp: payload.no_telp 
     };
 
-    try {
-      await collection.insertOne(myobj) 
+    collection.insertOne(myobj, function(err, result) {
+      if (err) throw err;
       res.json({ status: 200, message:"Sukses melakukan registrasi", data: myobj });
-    } catch (error) {
-      throw err
-    }
+      db.close()
+    })
+  })
   
-  })
-  client.close();
 }
 
-const loginUser = async (req,res) => {
-  const payload = req.body;
-  await client.connect(async err => {
-    const collection = client.db("inventory").collection("User");
-    dataUser = await collection.findOne({email: payload.email})
-
-    if(bcrypt.compareSync(payload.password, dataUser.password)) {
-      res.json({ status: 200, message: "Sukses login", data: dataUser})
-    } else {
-      res.json({ status: 400, message: "Password Salah", data: null})
-    }
-  })
-  client.close()
-}
-
-const detailUser = async (req, res) => {
-  await client.connect(async err => {
+function detailUser(req,res) {
+  MongoClient.connect(uri,function (err,db) {
     if (err) throw err;
-    const collection = client.db("inventory").collection("User");
     const id = Number(req.params.id)
-    dataUser = await collection.findOne({ id_user: id })
-    if (!dataUser) {
-      res.json({ status: 400, message: "User tidak ditemukan", data: null })
-    } else {
-      res.json({ status: 200, message: "success", data: dataUser })
-    }
+    const collection = db.db("inventory").collection("User");
+    collection.findOne({id_user: id}, function(err, result) {
+      if (err) throw err;
+      if (!result) {
+        res.json({ status: 404, message: "User tidak ditemukan", data: null })
+      } else {
+        res.json({ status: 200, message: "success", data: result })
+      }
+      db.close()
+    })
   })
-  client.close()
+
 }
-
-
 
 module.exports = {
-  regisUser,
   loginUser,
-  detailUser
+  detailUser,
+  regisUser
 }
