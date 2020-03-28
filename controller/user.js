@@ -69,7 +69,6 @@ function detailUser(req,res) {
       db.close()
     })
   })
-
 }
 
 module.exports = {

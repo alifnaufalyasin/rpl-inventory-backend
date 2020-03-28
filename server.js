@@ -51,5 +51,13 @@ async function authenticateToken(req,res,next) {
 }
 
 
+router.post('/regisOrganisasi', regisOrganisasi)
+router.post('/getOrganisasi',getOrganisasi)
+
+router.post('/addBarang', addBarang)
+router.post('/getBarang', getBarang)
+router.post('/removeBarang')
+router.post('/updateBarang')
+
 
 app.listen(process.env.PORT, () => console.log(`Server running in port: ${process.env.PORT}`))
