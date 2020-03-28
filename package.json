@@ -8,12 +8,14 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-useragent": "^1.0.13",
+    "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.5.5",
     "nodemon": "^2.0.2"
   },
   "devDependencies": {},
   "scripts": {
-    "test": "nodemon server.js",
+    "devStart": "nodemon server.js && nodemon serverAuth.js",
+    "test": "nodemon server.js && nodemon serverAuth.js",
     "start": "node server.js"
   },
   "repository": {
