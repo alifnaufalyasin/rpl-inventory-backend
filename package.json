@@ -8,14 +8,18 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-useragent": "^1.0.13",
+    "firebase": "^7.13.1",
+    "firebase-admin": "^8.10.0",
+    "jimp": "^0.9.8",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.5.5",
-    "nodemon": "^2.0.2"
+    "nodemon": "^2.0.2",
+    "qrcode": "^1.4.4"
   },
   "devDependencies": {},
   "scripts": {
-    "devStart": "nodemon server.js && nodemon serverAuth.js",
-    "test": "nodemon server.js && nodemon serverAuth.js",
+    "devStart": "nodemon serverAuth.js",
+    "test": "nodemon server.js",
     "start": "node server.js"
   },
   "repository": {
