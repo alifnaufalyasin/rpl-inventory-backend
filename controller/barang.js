@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const organisasi = require('./organisasi');
+const { QRMaker, upload } = require('../module/qrMaker')
 const MongoClient = require('mongodb').MongoClient;
 require('dotenv').config()
 
@@ -22,9 +23,19 @@ function addBarang(req,res) {
     const dd = date.getDate()
     const mm = date.getMonth() + 1
     const yyyy = date.getFullYear()
+    //kebutuhan kode barcode
+    const idOrg = String(payload.id_organisasi).padStart(3, "0") 
+    const strDate = String(dd).padStart(2, "0") + String(mm).padStart(2, "0") + String(yyyy)
+    const idBrg = String(idBarang).padStart(4, "0")
+    const kode = idOrg +'.'+ strDate +'.'+ idBrg
+    // proses pembuatan barcode dan upload firebase
+    await QRMaker(kode)
+    const fbLocation = kode+".png"
+    
+    
+    const linkBarcode =`https://firebasestorage.googleapis.com/v0/b/rpl-inventory.appspot.com/o/qrCode%2F${fbLocation}?alt=media`
 
     const dateNow = dd +"-"+ mm +"-"+ yyyy
-
     const myobj = { 
       id_barang: idBarang,
       nama: payload.nama, 
@@ -33,7 +44,8 @@ function addBarang(req,res) {
       tgl_masuk: dateNow,
       tgl_produksi: payload.tgl_produksi,
       tgl_cek: dateNow,
-      barcode: payload.barcode,
+      barcode: linkBarcode,
+      kode_barcode: kode,
       deskripsi: payload.deskripsi,
       value: payload.value
     };
