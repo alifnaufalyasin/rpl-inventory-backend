@@ -1,13 +1,13 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const useragent = require('express-useragent');
+const cors = require('cors')
 const { loginUser, detailUser, regisUser } = require('./controller/user');
 const jwt = require('jsonwebtoken');
 const { regisOrganisasi, getOrganisasi } = require('./controller/organisasi');
 const { addBarang, getBarang, updateBarang, deleteBarang } = require('./controller/barang');
 const { scanQR, getScanLog } = require('./controller/scan')
 require('dotenv').config()
-
 
 const app = express()
 const router = express.Router()
@@ -16,7 +16,7 @@ const router = express.Router()
 app.use(bodyParser.urlencoded({extended:true}))
 app.use(useragent.express())
 app.use(bodyParser.json())
-
+app.use(cors())
 app.use('/api', router)
 
 //---Route List
