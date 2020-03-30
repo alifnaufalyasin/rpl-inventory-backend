@@ -58,7 +58,7 @@ function regisUser(req,res) {
 function detailUser(req,res) {
   MongoClient.connect(uri,function (err,db) {
     if (err) throw err;
-    const id = Number(req.params.id)
+    const id = req.user.id_user
     const collection = db.db("inventory").collection("User");
     collection.findOne({id_user: id}, function(err, result) {
       if (err) throw err;
