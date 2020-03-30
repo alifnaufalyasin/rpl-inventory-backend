@@ -62,7 +62,7 @@ function addBarang(req,res) {
       if (err) throw err;
       colLogScan.insertOne(logScan, function(err, result) {
         if (err) throw err;
-        res.json({ status: 200, message:"Sukses menambahkan barang", data: myobj });
+        res.status(200).json({ message:"Sukses menambahkan barang", data: myobj });
         db.close()
       })
     })
@@ -78,10 +78,10 @@ function getBarang(req,res) {
     if (total != 0){
       const barang = await collection.find({ id_organisasi: id_organisasi }).toArray()
       if (barang.length === 0){
-        res.json({ status: 200, message: "Barang kosong", data: null });
-      }else res.json({ status: 200, message: "sukses", data: barang  });
+        res.status(200).json({ message: "Barang kosong", data: null });
+      }else res.status(200).json({ message: "sukses", data: barang  });
     }else{
-      res.json({ status: 200, message: "Barang kosong", data: null  });
+      res.status(200).json({ message: "Barang kosong", data: null });
     }
   })
 }
@@ -94,11 +94,11 @@ function updateBarang(req,res) {
     const collection = db.db("inventory").collection("Barang");
     const data = await collection.findOne({ id_barang: idBarang })
     if (!data) {
-      res.json({status: 200, message: "barang tidak terdaftar", data: null})    
+      res.status(200).json({ message: "barang tidak terdaftar", data: null})    
     }else{
       collection.updateOne({ id_barang: idBarang }, {$set: payload}, function(err, result) {
         if (err) throw err
-        res.json({status: 200, message: "Sukses"})    
+        res.status(200).json({ message: "Sukses"})    
         db.close();
       })
     }
@@ -115,7 +115,7 @@ function deleteBarang(req,res) {
     const collection = db.db("inventory").collection("Barang");
     collection.deleteOne(obj,function(err, obj) {
       if (err) throw err;
-      res.json({status: 200, message: "sukses delete barang"})    
+      res.status(200).json({ message: "sukses delete barang"})    
       db.close();
     });
 
