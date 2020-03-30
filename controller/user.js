@@ -19,7 +19,8 @@ async function loginUser(req,res) {
       }else{
         if(bcrypt.compareSync(payload.password, result.password)) {
           const user = { email: payload.email }
-          const token = signUser(user)
+          console.log(result)
+          const token = signUser(result)
           res.json({ status: 200, message: "Sukses login", access_token: token, token_type: "bearer", data: result})
         } else {
           res.json({ status: 401, message: "Password Salah", data: null})
