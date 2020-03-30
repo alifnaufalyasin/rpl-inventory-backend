@@ -25,7 +25,7 @@ router.get('/', (req,res) => res.send("Welcome : " + req.useragent.source))
 //user
 router.post('/login', loginUser)
 router.post('/regisUser', regisUser)
-router.get('/user/:id', authenticateToken, detailUser)
+router.get('/user', authenticateToken, detailUser)
 
 //organisasi
 router.post('/regisOrganisasi', authenticateToken, regisOrganisasi)
