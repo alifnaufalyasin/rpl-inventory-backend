@@ -5,6 +5,7 @@ const { loginUser, detailUser, regisUser } = require('./controller/user');
 const jwt = require('jsonwebtoken');
 const { regisOrganisasi, getOrganisasi } = require('./controller/organisasi');
 const { addBarang, getBarang, updateBarang, deleteBarang } = require('./controller/barang');
+const { scanQR, getScanLog } = require('./controller/scan')
 require('dotenv').config()
 
 
@@ -35,6 +36,10 @@ router.post('/addBarang', authenticateToken, addBarang)
 router.get('/getBarang/:id_org', authenticateToken, getBarang)
 router.put('/updateBarang/:id', authenticateToken, updateBarang)
 router.delete('/deleteBarang/:id',authenticateToken, deleteBarang)
+
+// Scan QR
+router.post('/scanQR', authenticateToken, scanQR)
+router.get('/getScanLog/:idBarang', authenticateToken, getScanLog)
 
 
 async function authenticateToken(req,res,next) {
