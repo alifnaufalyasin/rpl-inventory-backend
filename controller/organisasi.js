@@ -18,7 +18,7 @@ function regisOrganisasi(req,res) {
     };
     collection.insertOne(myobj, function(err, result) {
       if (err) throw err;
-      res.json({ status: 200, message:"Sukses melakukan registrasi organisasi", data: myobj });
+      res.status(200).json({ message:"Sukses melakukan registrasi organisasi", data: myobj });
       db.close()
     })
   })
@@ -30,7 +30,7 @@ function getOrganisasi(req,res) {
     const collection = db.db("inventory").collection("Organisasi");
     collection.find({}).toArray(function(err, result) {
       if (err) throw err;
-      res.send(result)
+      res.status(200).send(result)
       db.close()
     })
   })
