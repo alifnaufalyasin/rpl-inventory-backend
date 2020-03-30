@@ -15,15 +15,15 @@ async function loginUser(req,res) {
       // console.log(result)
       console.log(result);
       if(!result){
-        res.json({ status: 401, message: "User tidak ditemukan", data: null})
+        res.status(404).json({  message: "User tidak ditemukan", data: null})
       }else{
         if(bcrypt.compareSync(payload.password, result.password)) {
           const user = { email: payload.email }
           console.log(result)
           const token = signUser(result)
-          res.json({ status: 200, message: "Sukses login", access_token: token, token_type: "bearer", data: result})
+          res.status(200).json({ message: "Sukses login", access_token: token, token_type: "bearer", data: result})
         } else {
-          res.json({ status: 401, message: "Password Salah", data: null})
+          res.status(401).json({ message: "Password Salah", data: null})
         }
       }
       db.close();
@@ -48,7 +48,7 @@ function regisUser(req,res) {
 
     collection.insertOne(myobj, function(err, result) {
       if (err) throw err;
-      res.json({ status: 200, message:"Sukses melakukan registrasi", data: myobj });
+      res.status(200).json({ message:"Sukses melakukan registrasi", data: myobj });
       db.close()
     })
   })
@@ -63,9 +63,9 @@ function detailUser(req,res) {
     collection.findOne({id_user: id}, function(err, result) {
       if (err) throw err;
       if (!result) {
-        res.json({ status: 404, message: "User tidak ditemukan", data: null })
+        res.status(404).json({ message: "User tidak ditemukan", data: null })
       } else {
-        res.json({ status: 200, message: "success", data: result })
+        res.status(200).json({ message: "success", data: result })
       }
       db.close()
     })

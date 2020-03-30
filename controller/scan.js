@@ -32,7 +32,7 @@ function scanQR(req,res){
       if (err) throw err;
       colBarang.updateOne({ id_barang: barang.id_barang}, {$set: {tgl_cek: dateNow}}, function(err, result) {
         if (err) throw err
-        res.status(200).json({message: "Sukses"})    
+        res.status(200).json({ message: "Sukses" })    
         db.close();
       })
     })
@@ -48,7 +48,7 @@ function getScanLog(req,res) {
     const collection = db.db("inventory").collection("Log_Scan");
     collection.find({id_barang: idBarang}).toArray(function(err, result) {
       if (err) throw err;
-      res.status(200).json({data : result})
+      res.status(200).json({ message: "Sukses", data : result })
       db.close()
     })
   })
