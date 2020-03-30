@@ -1,5 +1,3 @@
-const bcrypt = require('bcrypt');
-const organisasi = require('./organisasi');
 const { QRMaker, upload } = require('../module/qrMaker')
 const MongoClient = require('mongodb').MongoClient;
 require('dotenv').config()
@@ -20,8 +18,8 @@ function addBarang(req,res) {
     })
 
     const date = new Date()
-    const dd = date.getDate()
-    const mm = date.getMonth() + 1
+    let dd = date.getDate()
+    let mm = date.getMonth() + 1
     const yyyy = date.getFullYear()
     //kebutuhan kode barcode
     const idOrg = String(payload.id_organisasi).padStart(3, "0") 
@@ -31,7 +29,8 @@ function addBarang(req,res) {
     // proses pembuatan barcode dan upload firebase
     await QRMaker(kode)
     const fbLocation = kode+".png"
-    
+    dd = String(dd).padStart(2, "0")
+    mm = String(mm).padStart(2, "0")
     
     const linkBarcode =`https://firebasestorage.googleapis.com/v0/b/rpl-inventory.appspot.com/o/qrCode%2F${fbLocation}?alt=media`
 
@@ -50,10 +49,22 @@ function addBarang(req,res) {
       value: payload.value
     };
 
+    const colLogScan = db.db("inventory").collection("Log_Scan");
+    const id = await colLogScan.countDocuments()
+
+    const logScan = {
+      id_scan: id + 1,
+      id_barang: idBarang,
+      tgl_cek: dateNow
+    }
+
     collection.insertOne(myobj, function(err, result) {
       if (err) throw err;
-      res.json({ status: 200, message:"Sukses menambahkan barang", data: myobj });
-      db.close()
+      colLogScan.insertOne(logScan, function(err, result) {
+        if (err) throw err;
+        res.json({ status: 200, message:"Sukses menambahkan barang", data: myobj });
+        db.close()
+      })
     })
   })
 }
