@@ -1,14 +1,14 @@
 const { QRMaker, upload } = require('../module/qrMaker')
-const MongoClient = require('mongodb').MongoClient;
+const MongoClient = require('mongodb').MongoClient
 require('dotenv').config()
 
 const uri = "mongodb+srv://admin:"+process.env.passDB+"@alive-t50rd.mongodb.net/test?retryWrites=true&w=majority"
 
 function addBarang(req,res) {
-  const payload = req.body;
+  const payload = req.body
   MongoClient.connect(uri, async function (err,db) {
-    if (err) throw err;
-    const collection = db.db("inventory").collection("Barang");
+    if (err) throw err
+    const collection = db.db("inventory").collection("Barang")
     var data = await collection.findOne({ _id: "id_barang" })
    
     const idBarang = Number(data.last) + 1
@@ -49,7 +49,7 @@ function addBarang(req,res) {
       value: payload.value
     };
 
-    const colLogScan = db.db("inventory").collection("Log_Scan");
+    const colLogScan = db.db("inventory").collection("Log_Scan")
     const id = await colLogScan.countDocuments()
 
     const logScan = {
@@ -59,10 +59,10 @@ function addBarang(req,res) {
     }
 
     collection.insertOne(myobj, function(err, result) {
-      if (err) throw err;
+      if (err) throw err
       colLogScan.insertOne(logScan, function(err, result) {
-        if (err) throw err;
-        res.status(200).json({ message:"Sukses menambahkan barang", data: myobj });
+        if (err) throw err
+        res.status(200).json({ message:"Sukses menambahkan barang", data: myobj })
         db.close()
       })
     })
@@ -72,16 +72,16 @@ function addBarang(req,res) {
 function getBarang(req,res) {
   const id_organisasi = Number(req.params.id_org)
   MongoClient.connect(uri, async function (err,db) {
-    if (err) throw err;
+    if (err) throw err
     const collection = db.db("inventory").collection("Barang");
     const total = await collection.countDocuments()
     if (total != 0){
       const barang = await collection.find({ id_organisasi: id_organisasi }).toArray()
       if (barang.length === 0){
-        res.status(200).json({ message: "Barang kosong", data: null });
-      }else res.status(200).json({ message: "sukses", data: barang  });
+        res.status(200).json({ message: "Barang kosong", data: null })
+      }else res.status(200).json({ message: "sukses", data: barang  })
     }else{
-      res.status(200).json({ message: "Barang kosong", data: null });
+      res.status(200).json({ message: "Barang kosong", data: null })
     }
   })
 }
@@ -98,25 +98,24 @@ function updateBarang(req,res) {
     }else{
       collection.updateOne({ id_barang: idBarang }, {$set: payload}, function(err, result) {
         if (err) throw err
-        res.status(200).json({ message: "Sukses"})    
-        db.close();
+        res.status(200).json({ message: "Sukses"})
       })
     }
-    db.close();
+    db.close()
   })
 }
 
 function deleteBarang(req,res) {
   const idBarang = Number(req.params.id)
-  const payload = req.body;
+  const payload = req.body
   MongoClient.connect(uri, async function (err,db) {
-    if (err) throw err;
+    if (err) throw err
     const obj = {id_barang: idBarang}
     const collection = db.db("inventory").collection("Barang");
     collection.deleteOne(obj,function(err, obj) {
-      if (err) throw err;
+      if (err) throw err
       res.status(200).json({ message: "sukses delete barang"})    
-      db.close();
+      db.close()
     });
 
   })

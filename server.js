@@ -2,12 +2,13 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const useragent = require('express-useragent');
 const cors = require('cors')
+require('dotenv').config()
+
 const { loginUser, detailUser, regisUser } = require('./controller/user');
-const jwt = require('jsonwebtoken');
 const { regisOrganisasi, getOrganisasi } = require('./controller/organisasi');
 const { addBarang, getBarang, updateBarang, deleteBarang } = require('./controller/barang');
 const { scanQR, getScanLog } = require('./controller/scan')
-require('dotenv').config()
+const { authenticateToken } = require('./module/auth')
 
 const app = express()
 const router = express.Router()
@@ -17,6 +18,8 @@ app.use(bodyParser.urlencoded({extended:true}))
 app.use(useragent.express())
 app.use(bodyParser.json())
 app.use(cors())
+app.set('port', process.env.PORT || 3000)
+const port = app.get('port')
 app.use('/api', router)
 
 //---Route List
@@ -42,18 +45,7 @@ router.post('/scanQR', authenticateToken, scanQR)
 router.get('/getScanLog/:idBarang', authenticateToken, getScanLog)
 
 
-async function authenticateToken(req,res,next) {
-  const authHeader = req.headers['authorization']
-  const token = authHeader && authHeader.split(' ')[1]
-  console.log(token)
-  if (token == null) res.sendStatus(401)
 
-  jwt.verify(token, process.env.tokenSecret, (err,user) => {
-    if (err) return res.sendStatus(403)
-    req.user = user
-    next()
-  })
-}
 
 
 router.post('/regisOrganisasi', regisOrganisasi)
@@ -65,4 +57,4 @@ router.post('/removeBarang')
 router.post('/updateBarang')
 
 
-app.listen(process.env.PORT, () => console.log(`Server running in port: ${process.env.PORT}`))
+app.listen(port, () => console.log(`Server running in port: ${port}`))
