@@ -1,5 +1,4 @@
-const { QRMaker, upload } = require('../module/qrMaker')
-const MongoClient = require('mongodb').MongoClient;
+const MongoClient = require('mongodb').MongoClient
 require('dotenv').config()
 
 const uri = "mongodb+srv://admin:"+process.env.passDB+"@alive-t50rd.mongodb.net/test?retryWrites=true&w=majority"
@@ -44,10 +43,10 @@ function getScanLog(req,res) {
   const idBarang = Number(req.params.idBarang)
   console.log(idBarang)
   MongoClient.connect(uri, async function (err,db) {
-    if (err) throw err;
+    if (err) throw err
     const collection = db.db("inventory").collection("Log_Scan");
     collection.find({id_barang: idBarang}).toArray(function(err, result) {
-      if (err) throw err;
+      if (err) throw err
       res.status(200).json({ message: "Sukses", data : result })
       db.close()
     })
