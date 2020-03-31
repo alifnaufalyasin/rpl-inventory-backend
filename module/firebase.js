@@ -1,6 +1,6 @@
-var admin = require("firebase-admin");
+const admin = require("firebase-admin")
 
-var serviceAccount = {
+const serviceAccount = {
   "type": "service_account",
   "project_id": "rpl-inventory",
   "private_key_id": "ab95d75be21c21fde7738621527fc264f9db3e33",
