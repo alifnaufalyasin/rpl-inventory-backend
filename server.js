@@ -44,15 +44,13 @@ router.delete('/deleteBarang/:id',authenticateToken, deleteBarang)
 router.post('/scanQR', authenticateToken, scanQR)
 router.get('/getScanLog/:idBarang', authenticateToken, getScanLog)
 
-
-
-
-
+//organisasi route
 router.post('/regisOrganisasi', regisOrganisasi)
 router.post('/getOrganisasi',getOrganisasi)
 
-router.post('/addBarang', addBarang)
-router.post('/getBarang', getBarang)
+//barang route
+router.post('/addBarang', authenticateToken, addBarang)
+router.post('/getBarang', authenticateToken, getBarang)
 router.post('/removeBarang')
 router.post('/updateBarang')
 

@@ -1,4 +1,6 @@
 const jwt = require('jsonwebtoken')
+const mongoose = require('mongoose')
+
 require('dotenv').config()
 
 function signUser(user) {
@@ -15,6 +17,17 @@ async function authenticateToken(req,res,next) {
     if (err) return res.sendStatus(403)
     req.user = user
     next()
+  })
+}
+
+function initMongoose(){
+  mongoose.connect(String(process.env.url_mongo), {
+    useNewUrlParser: true,
+    reconnectTries: 30,
+    keepAlive: true,
+    reconnectInterval: 500, // Reconnect every 500ms
+    connectTimeoutMS: 10000, // Give up initial connection after 10 seconds
+    socketTimeoutMS: 45000 // Close sockets after 45 seconds of inactivity
   })
 }
 
