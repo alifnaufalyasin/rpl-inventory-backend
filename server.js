@@ -4,45 +4,48 @@ const useragent = require('express-useragent');
 const cors = require('cors')
 require('dotenv').config()
 
-const { loginUser, detailUser, regisUser } = require('./controller/user');
 const { regisOrganisasi, getOrganisasi } = require('./controller/organisasi');
 const { addBarang, getBarang, updateBarang, deleteBarang } = require('./controller/barang');
 const { scanQR, getScanLog } = require('./controller/scan')
-const { authenticateToken } = require('./module/auth')
+const { authenticateToken } = require('./helper/auth')
+const relation = require('./config/relation');
+const db = require('./config/database');
+const { response } = require('./helper/wrapper')
 
 const app = express()
 const router = express.Router()
 
-//---Local Environtment Setup
+//Local Environtment Setup
 app.use(bodyParser.urlencoded({extended:true}))
 app.use(useragent.express())
 app.use(bodyParser.json())
 app.use(cors())
-app.set('port', process.env.PORT || 3000)
-const port = app.get('port')
-app.use('/api', router)
+const port = process.env.PORT || 3000
 
-//---Route List
+//route source
+const adminRoute = require('./routes/admin')
+const organisasiRoute = require('./routes/organisasi');
+const barangRoute = require('./routes/barang');
+const scanQRRoute = require('./routes/scan')
+
+const { deleteFoto } = require('./validator/validator');
+
+//---Route test
 router.get('/', (req,res) => res.send("Welcome : " + req.useragent.source))
 
 //user
-router.post('/login', loginUser)
-router.post('/regisUser', regisUser)
-router.get('/user', authenticateToken, detailUser)
+app.use('/api/admin' , adminRoute)
 
 //organisasi
-router.post('/regisOrganisasi', authenticateToken, regisOrganisasi)
-router.get('/getOrganisasi', authenticateToken, getOrganisasi)
+app.use('/api/organisasi', organisasiRoute)
 
 //barang
-router.post('/addBarang', authenticateToken, addBarang)
-router.get('/getBarang/:id_org', authenticateToken, getBarang)
-router.put('/updateBarang/:id', authenticateToken, updateBarang)
-router.delete('/deleteBarang/:id',authenticateToken, deleteBarang)
+app.use('/api/barang', barangRoute)
 
 // Scan QR
-router.post('/scanQR', authenticateToken, scanQR)
-router.get('/getScanLog/:idBarang', authenticateToken, getScanLog)
+app.use('/api/scanQR', scanQRRoute)
+// router.post('/scanQR', authenticateToken, scanQR)
+// router.get('/getScanLog/:idBarang', authenticateToken, getScanLog)
 
 //organisasi route
 router.post('/regisOrganisasi', regisOrganisasi)
@@ -54,5 +57,24 @@ router.post('/getBarang', authenticateToken, getBarang)
 router.post('/removeBarang')
 router.post('/updateBarang')
 
+// error handling
+app.use((req,res,next) => {
+  let err = new Error('Route not found')
+  err.status = 404
+  next(err)
+})
 
-app.listen(port, () => console.log(`Server running in port: ${port}`))
+app.use(async (err,req,res,next) => {
+  await deleteFoto(req)
+  const {message} = err
+  const status = err.status || 500
+  console.log(err)
+  response(res,false,null,message,status)
+})
+
+
+app.listen(port, () => {
+  db.sync({  })
+    .then(() => console.log(`app is running on port ${port}`))
+    .catch(err => console.log(err.message))
+})

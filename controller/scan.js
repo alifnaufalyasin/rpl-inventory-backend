@@ -1,59 +1,35 @@
-const MongoClient = require('mongodb').MongoClient
+const Item = require('../models/items')
+const Logs = require('../models/log')
+const { response } = require('../helper/wrapper')
 require('dotenv').config()
 
-const uri = "mongodb+srv://admin:"+process.env.passDB+"@alive-t50rd.mongodb.net/test?retryWrites=true&w=majority"
 
-function scanQR(req,res){
-  const kode = req.body.kode
-  MongoClient.connect(uri, async function (err,db) {
-    if (err) throw err;
-    const colBarang = db.db("inventory").collection("Barang");
-    const colLogScan = db.db("inventory").collection("Log_Scan");
-    const barang = await colBarang.findOne({ kode_barcode: kode })
-    const id = await colLogScan.countDocuments()
+async function scanQR(req,res){
+  const kode_barcode = req.body.kode
 
-    const date = new Date()
-    let dd = date.getDate()
-    let mm = date.getMonth() + 1
-    const yyyy = date.getFullYear()
-    dd = String(dd).padStart(2, "0")
-    mm = String(mm).padStart(2, "0")
-    
-    const dateNow = dd +"-"+ mm +"-"+ yyyy
-    console.log(barang)
-    const myObj = {
-      id_scan: id + 1,
-      id_barang: barang.id_barang,
-      tgl_cek: dateNow
-    }
+  const item = await Item.findOne({ where: {kode_barcode}, include: [Logs] })
+  if (!item) return response(res,false,null,'Barang tidak ditemukan',401)
 
-    colLogScan.insertOne(myObj, function(err, result) {
-      if (err) throw err;
-      colBarang.updateOne({ id_barang: barang.id_barang}, {$set: {tgl_cek: dateNow}}, function(err, result) {
-        if (err) throw err
-        res.status(200).json({ message: "Sukses" })    
-        db.close();
-      })
-    })
+  const scanlog = await Logs.create()
+  item.tgl_cek = scanlog.tgl_cek
 
-  })
+  await scanlog.save()
+  await item.save()
+
+  await scanlog.setItem(item)
+  return response(res,true, item,'Scan barang berhasil',200)
 }
 
-function getScanLog(req,res) {
-  const idBarang = Number(req.params.idBarang)
-  console.log(idBarang)
-  MongoClient.connect(uri, async function (err,db) {
-    if (err) throw err
-    const collection = db.db("inventory").collection("Log_Scan");
-    collection.find({id_barang: idBarang}).toArray(function(err, result) {
-      if (err) throw err
-      res.status(200).json({ message: "Sukses", data : result })
-      db.close()
-    })
-  })
+
+async function getScanLog(req,res) {
+  const id_barang = req.params.id
+  
+  const item = await Item.findByPk(id_barang, { include: [Logs] })
+  if (!item) return response(res,false,null,'Barang tidak ditemukan',401)
+  return response(res,true, item,'Scan barang berhasil',200)  
 }
 
 module.exports ={
   scanQR,
-  getScanLog
+  getScanLog,
 }

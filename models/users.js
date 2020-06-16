@@ -1,10 +1,10 @@
 const Sequelize = require('sequelize')
 const db = require('../config/database')
 
-const Organizations = db.define(
-    'organizations',
+const User = db.define(
+    'users',
     {
-      id_organisasi: {
+      id_user: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
@@ -14,19 +14,15 @@ const Organizations = db.define(
         type : Sequelize.STRING,
         allowNull : false
       },
-      logo : {
+      idcard_number : {
         type : Sequelize.STRING,
         allowNull : false
       },
-      alamat : {
-        type : Sequelize.STRING,
-        allowNull : false
-      },
-      password: {
+      no_telp : {
         type : Sequelize.STRING,
         allowNull : false
       }
   }
 )
 
-module.exports = Organizations
+module.exports = User
