@@ -24,14 +24,14 @@ async function regisOrganisasi(req,res) {
 async function setOrganisasi(req,res) {
   const admin = await Admin.findByPk(req.user.id_admin)
   const organisasi = await Organizations.findByPk(req.body.id_organisasi)
-  if (organisasi) return response(res,false,null,'Organisasi sudah ada!',401)
+  if (!organisasi) return response(res,false,null,'Organisasi tidak ditemukan!',401)
   if (!isValid(req.body.password, organisasi.password)) return response(res,false,null,'Password organisasi salah!',401)
   organisasi.addAdmin(admin)
   return response(res,true, null ,'Sukses bergabung dengan organisasi',201)
 }
 
 async function getOrganisasi(req,res) {
-  const organisasi = await Organizations.findAll({attributes: ['id_organisasi', 'nama', 'logo', 'alamat'], include: [Item]})
+  const organisasi = await Organizations.findAll({attributes: ['id_organisasi', 'nama', 'logo', 'alamat'], include: [Item, Admin]})
   return response(res,true, organisasi,'Berikut daftar organisasi',201)
 }
 

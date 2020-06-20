@@ -2,15 +2,22 @@ const router = require('express-promise-router')()
 const { authenticateToken } = require('../helper/auth')
 const { validateBody, validateNama } = require('../validator/validator');
 const schema = require('../schema/userSchema');
-const { regisOrganisasi, getOrganisasi } = require('../controller/organisasi');
+const { regisOrganisasi, getOrganisasi, setOrganisasi } = require('../controller/organisasi');
 const {upload} = require('../helper/upload');
 
 
 router.route('/')
-  .get(authenticateToken,
+  .get(
+    authenticateToken,
     getOrganisasi
     )
 
+router.route('/')
+  .post(
+    authenticateToken,
+    validateBody(schema.setOrganisasi),
+    setOrganisasi
+    )
   
 router.route('/registrasi')
   .post(

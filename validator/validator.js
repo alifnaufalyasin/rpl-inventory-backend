@@ -3,6 +3,7 @@ const {response, customError} = require('../helper/wrapper')
 const cloudinary = require('../config/cloudinary')
 const Admin = require('../models/Admin')
 const Organizations = require('../models/organisasi')
+const User = require('../models/users')
 
 const validateBody = schema => {
   return async (req,res,next) => {
@@ -51,11 +52,19 @@ const deleteFoto = async req => {
 const validateEmail = () => {
   return async (req,res,next) => {
     const {email} = req.body
-    const admin = await Admin.findOne({where : {email}})
-    if (admin) {
-      return next(customError('Email sudah digunakan', 400))
+    if (!req.body.idcard_number){
+      const admin = await Admin.findOne({where : {email}})
+      if (admin) {
+        return next(customError('Email sudah digunakan', 400))
+      }
+      next()
+    }else{
+      const user = await User.findOne({where : {email}})
+      if (user) {
+        return next(customError('Email sudah digunakan', 400))
+      }
+      next()
     }
-    next()
   }
 }
 

@@ -27,11 +27,15 @@ const adminRoute = require('./routes/admin')
 const organisasiRoute = require('./routes/organisasi');
 const barangRoute = require('./routes/barang');
 const scanQRRoute = require('./routes/scan')
+const lineBot = require('./routes/lineBot')
 
 const { deleteFoto } = require('./validator/validator');
 
 //---Route test
 router.get('/', (req,res) => res.send("Welcome : " + req.useragent.source))
+
+//lineBot
+app.use('/api/lineBot', lineBot)
 
 //user
 app.use('/api/admin' , adminRoute)
