@@ -7,8 +7,14 @@ require('dotenv').config()
 
 
 async function loginAdmin(req,res) {
+  console.log('login')
   const payload = req.body
-  const admin = await Admin.findOne({where : {email: payload.email}, include : Organizations})  
+  const admin = await Admin.findOne({where : {email: payload.email}, 
+      include : [{
+        model: Organizations,
+        attributes: ['id_organisasi', 'nama', 'logo', 'alamat']
+      }]
+    })  
   if (!admin) return response(res,false,null,'Akun tidak ditemukan!',401)
   if(isValid(payload.password, admin.password)) {
     let data = {}
@@ -16,6 +22,8 @@ async function loginAdmin(req,res) {
     data.nama = admin.nama
     data.email = admin.email
     const token = signUser(data)
+    data.organisasi = admin.organizations
+    delete data.organisasi.password
     data.token = token
     return response(res,true, data,'Sukses Login',200)
   } else return response(res,false,null,'Password salah!',401)

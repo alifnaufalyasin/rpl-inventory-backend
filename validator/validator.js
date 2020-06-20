@@ -18,6 +18,7 @@ const validateBody = schema => {
         errorData.push(error)
       })
       await deleteFoto(req)
+      console.log(errorData)
       return response(res,false,errorData,'Validasi gagal',406)
     }
     next()

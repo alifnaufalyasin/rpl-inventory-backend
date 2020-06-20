@@ -12,7 +12,8 @@ async function regisOrganisasi(req,res) {
   const cekOrganisasi = await Organizations.findOne({where: { nama: payload.nama }})
   if (cekOrganisasi) return response(res,false,null,'Organisasi sudah ada!',401)
   else {
-    payload.logo = req.file.url
+    console.log(req.file)
+    payload.logo = req.file.secure_url
     payload.password = encryptPass(payload.password)
     const organisasi = new Organizations(payload)
     await organisasi.save()

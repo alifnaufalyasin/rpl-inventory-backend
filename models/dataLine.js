@@ -16,7 +16,11 @@ const DataLine = db.define(
       },
       token : {
         type : Sequelize.STRING,
-        allowNull : false
+        allowNull : true
+      },
+      id_organisasi : {
+        type : Sequelize.INTEGER,
+        allowNull : true
       },
   },
 )
