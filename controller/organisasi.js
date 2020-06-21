@@ -3,6 +3,7 @@ const { encryptPass, isValid } = require('../helper/encrypt')
 const Admin = require('../models/Admin')
 const Item = require('../models/items')
 const { response } = require('../helper/wrapper')
+const { Op } = require("sequelize");
 require('dotenv').config()
 
 
@@ -32,18 +33,38 @@ async function setOrganisasi(req,res) {
 }
 
 async function getOrganisasi(req,res) {
-  const organisasi = await Organizations.findAll({attributes: ['id_organisasi', 'nama', 'logo', 'alamat'], include: [Item, Admin]})
+  const organisasi = await Organizations.findAll({ attributes: ['id_organisasi', 'nama', 'logo', 'alamat'], include: [Item, Admin] })
   return response(res,true, organisasi,'Berikut daftar organisasi',201)
 }
 
-async function getOneOrganisasi(req,res){
+async function getOneOrganisasi(req,res) {
   const organisasi = await Organizations.findByPk(req.params.id, {attributes: ['id_organisasi', 'nama', 'logo', 'alamat'], include: [Item]})
   return response(res,true, organisasi,'Berikut daftar organisasi',201)
+}
+
+async function getNotOrganisasi(req,res) {
+  console.log('asdad')
+  let organisasi = await Organizations.findAll({ attributes: ['id_organisasi', 'nama', 'logo', 'alamat'], include: [Admin] })
+  let data = []
+  organisasi.map((item,index)=>{
+    let status = true
+    item.admins.map((item2,index2)=>{
+      if (item2.id_admin == req.user.id_admin) status = false
+    })
+    let final = {}
+    final.id_organisasi = item.id_organisasi
+    final.nama = item.nama
+    final.logo = item.logo
+    final.alamat = item.alamat
+    if (status) data.push(final)
+  })
+  return response(res,true, data,'Berikut daftar organisasi',201)
 }
 
 module.exports = {
   regisOrganisasi,
   getOrganisasi,
   setOrganisasi,
-  getOneOrganisasi
+  getOneOrganisasi,
+  getNotOrganisasi
 }
