@@ -36,8 +36,14 @@ async function getOrganisasi(req,res) {
   return response(res,true, organisasi,'Berikut daftar organisasi',201)
 }
 
+async function getOneOrganisasi(req,res){
+  const organisasi = await Organizations.findByPk(req.params.id, {attributes: ['id_organisasi', 'nama', 'logo', 'alamat'], include: [Item]})
+  return response(res,true, organisasi,'Berikut daftar organisasi',201)
+}
+
 module.exports = {
   regisOrganisasi,
   getOrganisasi,
-  setOrganisasi
+  setOrganisasi,
+  getOneOrganisasi
 }
