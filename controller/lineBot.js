@@ -8,6 +8,7 @@ async function addDataLine (req,res) {
   const data = await DataLine.findOne({ where: { userId } })
   if (data){
     if (payload.token) data.token = payload.token
+    if (payload.id_admin) data.id_admin = payload.id_admin
     if (payload.id_organisasi) data.id_organisasi = Number(payload.id_organisasi)
     data.save()
     return response(res,true, data,'Berhasil',201)
