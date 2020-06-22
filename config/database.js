@@ -8,7 +8,7 @@ const db = new Sequelize(
     host : process.env.DB_HOST,
     dialect : 'mysql',
     dialectOptions: {
-      useUTC: false //for reading from database
+      useUTC: true //for reading from database
     },
     timezone: "+07:00" //for writing to database
   }
