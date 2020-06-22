@@ -20,7 +20,7 @@ async function addDataLine (req,res) {
 }
 
 async function getDataLine (req,res) {
-  const { userId } = req.params
+  const { userId } = req.query
   const data = await DataLine.findOne({ where: { userId } })
   if (!data) return response(res,true, null,'Belum terdaftar',401)
   return response(res,true, data,'Berhasil',201)
