@@ -18,6 +18,7 @@ const response = (res,status,data,message,code) => {
       code : code,
       data : resData
   }
+  console.log(response)
   res.status(code).send(response)
 }
 
