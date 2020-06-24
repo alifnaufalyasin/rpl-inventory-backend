@@ -31,11 +31,13 @@ const validateDate = () => {
       let myDate = req.body.tgl_produksi;
       myDate = myDate.split("-");
       if(myDate[0].length == 4){
+        console.log('year duluan')
         myDate[1] = Number(myDate[1]) + 1
-        const newDateYearFirst = myDate[2]+"/"+myDate[1]+"/"+myDate[0]; 
+        const newDateYearFirst = myDate[1]+"/"+myDate[2]+"/"+myDate[0]; 
         const dateNew = new Date(newDateYearFirst).getTime()
         req.body.tgl_produksi = dateNew
       }else{
+        console.log('day duluan')
         myDate[0] = Number(myDate[0]) + 1
         const newDate = myDate[1]+"/"+myDate[0]+"/"+myDate[2]; // mm/dd/yyyy
         const date = new Date(newDate).getTime()
