@@ -81,10 +81,18 @@ const validateNama = () => {
   }
 }
 
+const outputBody = () => {
+  return async (req,res,next) => {
+    console.log(req.body)
+    next()
+  }
+}
+
 module.exports = {
     validateBody,
     validateDate,
     deleteFoto,
     validateEmail,
-    validateNama
+    validateNama,
+    outputBody
 }

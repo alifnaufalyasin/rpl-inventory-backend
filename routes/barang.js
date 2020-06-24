@@ -1,6 +1,6 @@
 const router = require('express-promise-router')()
 const { authenticateToken } = require('../helper/auth')
-const { validateBody, validateDate } = require('../validator/validator');
+const { validateBody, validateDate, outputBody } = require('../validator/validator');
 const schema = require('../schema/userSchema');
 const { addBarang, getBarang, updateBarang, deleteBarang, restoreBarang } = require('../controller/barang');
 
@@ -9,6 +9,7 @@ const { addBarang, getBarang, updateBarang, deleteBarang, restoreBarang } = requ
 router.route('/add')
   .post(
     authenticateToken,
+    outputBody(),
     validateDate(),
     validateBody(schema.addBarang),
     addBarang
