@@ -21,10 +21,6 @@ const Admin = db.define(
       password : {
         type : Sequelize.STRING,
         allowNull : false
-      },
-      password : {
-        type : Sequelize.STRING,
-        allowNull : false
       }
   }
 )
